@@ -119,7 +119,8 @@ getMbtilesPool fp = do
 
 -- | Given access to an 'MbtilesPool', run an action against that pool.
 runMbtilesPoolT :: (MonadBaseControl IO m) => MbtilesPool -> MbtilesT m a -> m a
-runMbtilesPoolT p mbt = withResource p (runReaderT (unMbtilesT mbt))
+runMbtilesPoolT p mbt = control $ \runInIO -> 
+  withResource p $ \resource -> runInIO $ runReaderT (unMbtilesT mbt) resource
 
 type ValidationResult = (Connection, MbtilesMeta)
 
